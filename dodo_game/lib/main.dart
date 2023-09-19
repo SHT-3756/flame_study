@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dodo_game/barricade.dart';
 import 'package:dodo_game/click_to_start.dart';
 import 'package:dodo_game/dodo.dart';
@@ -46,6 +48,51 @@ class _HomeState extends State<Home> {
   double barricadeHeight = 0.4;
 
   bool gameHasOver = true;
+
+  bool controlJump = false;
+  double gravity = 9.8;
+  double height = 0;
+  double time = 0;
+  double velocity = 5;
+
+  void jumpDodo() {
+    controlJump = true;
+    Timer.periodic(const Duration(milliseconds: 10), (timer) {
+      height = -gravity / 2 * time * time + velocity * time;
+
+      setState(() {
+        if (1 - height > 1) {
+          resetJump();
+          dodoY = 1;
+          timer.cancel();
+        } else {
+          dodoY = 1 - height;
+        }
+      });
+      if (gameHasOver) {
+        timer.cancel();
+      }
+
+      time += 0.01;
+    });
+  }
+
+  void resetJump() {
+    controlJump = false;
+    time = 0;
+  }
+
+  void playGameAgain() {
+    setState(() {
+      gameHasOver = false;
+      gameHasStarted = false;
+      barricadeX = 1.2;
+      score = 0;
+      dodoY = 1;
+      controlJump = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
