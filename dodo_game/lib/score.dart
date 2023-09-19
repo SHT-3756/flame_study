@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class Score extends StatelessWidget {
   final bestScore;
-  final scroe;
+  final score;
 
-  const Score({Key? key, this.bestScore, this.scroe}) : super(key: key);
+  const Score({Key? key, this.bestScore, this.score}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class Score extends StatelessWidget {
             children: [
               Image.asset('assets/images/score.png', width: 60),
               Text(
-                scroe.toString(),
+                score.toString(),
                 style: const TextStyle(color: Colors.green, fontSize: 30),
               ),
             ],

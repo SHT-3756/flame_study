@@ -1,6 +1,7 @@
 import 'package:dodo_game/barricade.dart';
 import 'package:dodo_game/click_to_start.dart';
 import 'package:dodo_game/dodo.dart';
+import 'package:dodo_game/game_has_over.dart';
 import 'package:dodo_game/score.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,6 +45,7 @@ class _HomeState extends State<Home> {
   double barricadeWidth = 0.2;
   double barricadeHeight = 0.4;
 
+  bool gameHasOver = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,10 +57,11 @@ class _HomeState extends State<Home> {
             child: Center(
               child: Stack(
                 children: [
-                  ClickToStart(gameHasStarted: gameHasStarted),
-                  Score(scroe: score, bestScore: bestScore),
-                  Dodo(dodoX: dodoX, dodoY: dodoY - dodoHeight, dodoWidth: dodoWidth, dodoHeight: dodoHeight),
-                  Barricade(barricadeX: barricadeX, barricadeY: barricadeY - barricadeHeight, barricadeWidth: barricadeWidth, barricadeHeight: barricadeHeight)
+                  // ClickToStart(gameHasStarted: gameHasStarted),
+                  // Score(score: score, bestScore: bestScore),
+                  // Dodo(dodoX: dodoX, dodoY: dodoY - dodoHeight, dodoWidth: dodoWidth, dodoHeight: dodoHeight),
+                  // Barricade(barricadeX: barricadeX, barricadeY: barricadeY - barricadeHeight, barricadeWidth: barricadeWidth, barricadeHeight: barricadeHeight),
+                  GameHasOver(gameHasOver: gameHasOver)
                 ],
               ),
             ),
