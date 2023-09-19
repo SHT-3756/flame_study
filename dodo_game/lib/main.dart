@@ -1,4 +1,5 @@
 import 'package:dodo_game/click_to_start.dart';
+import 'package:dodo_game/dodo.dart';
 import 'package:dodo_game/score.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,6 +33,10 @@ class _HomeState extends State<Home> {
   int score = 0;
   int bestScore = 0;
 
+  double dodoX = -0.5;
+  double dodoY = 1;
+  double dodoWidth = 0.2;
+  double dodoHeight = 0.4;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +50,8 @@ class _HomeState extends State<Home> {
               child: Stack(
                 children: [
                   ClickToStart(gameHasStarted: gameHasStarted),
-                  Score(scroe: score,bestScore: bestScore),
+                  Score(scroe: score, bestScore: bestScore),
+                  Dodo(dodoX: dodoX, dodoY: dodoY - dodoHeight, dodoWidth: dodoWidth, dodoHeight: dodoHeight)
                 ],
               ),
             ),
