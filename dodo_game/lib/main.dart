@@ -1,4 +1,5 @@
 import 'package:dodo_game/click_to_start.dart';
+import 'package:dodo_game/score.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -10,10 +11,10 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Home(),
     );
   }
@@ -28,6 +29,9 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool gameHasStarted = false;
+  int score = 0;
+  int bestScore = 0;
+
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +43,10 @@ class _HomeState extends State<Home> {
             flex: 2,
             child: Center(
               child: Stack(
-                children: [ClickToStart(gameHasStarted: gameHasStarted)],
+                children: [
+                  ClickToStart(gameHasStarted: gameHasStarted),
+                  Score(scroe: score,bestScore: bestScore),
+                ],
               ),
             ),
           ),
