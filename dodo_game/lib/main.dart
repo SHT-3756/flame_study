@@ -55,6 +55,35 @@ class _HomeState extends State<Home> {
   double time = 0;
   double velocity = 5;
 
+  bool dodoHasPassedBarricade = false;
+
+  void updateForScore() {
+    if (barricadeX < dodoX && dodoHasPassedBarricade == false) {
+      setState(() {
+        dodoHasPassedBarricade = true;
+        score++;
+      });
+    }
+  }
+
+  void loopForBarricade() {
+    setState(() {
+      if (barricadeX <= -1.2) {
+        barricadeX = 1.2;
+        dodoHasPassedBarricade = false;
+      }
+    });
+  }
+
+  bool detectForCollision() {
+    if (barricadeX <= dodoX + dodoWidth && barricadeX + barricadeWidth >= dodoX && dodoY >= barricadeY - barricadeHeight) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+
   void jumpDodo() {
     controlJump = true;
     Timer.periodic(const Duration(milliseconds: 10), (timer) {
