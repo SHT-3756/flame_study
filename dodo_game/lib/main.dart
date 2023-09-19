@@ -47,7 +47,7 @@ class _HomeState extends State<Home> {
   double barricadeWidth = 0.2;
   double barricadeHeight = 0.4;
 
-  bool gameHasOver = true;
+  bool gameHasOver = false;
 
   bool controlJump = false;
   double gravity = 9.8;
@@ -56,6 +56,32 @@ class _HomeState extends State<Home> {
   double velocity = 5;
 
   bool dodoHasPassedBarricade = false;
+
+  void startGame() {
+    setState(() {
+      gameHasStarted = true;
+    });
+
+    Timer.periodic(const Duration(milliseconds: 10), (timer) {
+      if(detectForCollision()) {
+        gameHasOver = true;
+        timer.cancel();
+        setState(() {
+          if(score > bestScore) {
+            bestScore = score;
+          }
+        });
+      }
+
+      loopForBarricade();
+
+      updateForScore();
+
+      setState(() {
+        barricadeX -= 0.01;
+      });
+    });
+  }
 
   void updateForScore() {
     if (barricadeX < dodoX && dodoHasPassedBarricade == false) {
@@ -82,7 +108,6 @@ class _HomeState extends State<Home> {
       return false;
     }
   }
-
 
   void jumpDodo() {
     controlJump = true;
@@ -124,39 +149,43 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.blueGrey,
-      body: Column(
-        children: [
-          Expanded(
-            flex: 2,
-            child: Center(
-              child: Stack(
-                children: [
-                  // ClickToStart(gameHasStarted: gameHasStarted),
-                  // Score(score: score, bestScore: bestScore),
-                  // Dodo(dodoX: dodoX, dodoY: dodoY - dodoHeight, dodoWidth: dodoWidth, dodoHeight: dodoHeight),
-                  // Barricade(barricadeX: barricadeX, barricadeY: barricadeY - barricadeHeight, barricadeWidth: barricadeWidth, barricadeHeight: barricadeHeight),
-                  GameHasOver(gameHasOver: gameHasOver)
-                ],
-              ),
-            ),
-          ),
-          Expanded(
-              child: Container(
-            color: Colors.grey[600],
-            child: const Center(
-              child: Text(
-                'W E C O D E',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: gameHasOver ? (playGameAgain)
+          : (gameHasStarted ? (controlJump ? null : jumpDodo): startGame),
+      child: Scaffold(
+        backgroundColor: Colors.blueGrey,
+        body: Column(
+          children: [
+            Expanded(
+              flex: 2,
+              child: Center(
+                child: Stack(
+                  children: [
+                    ClickToStart(gameHasStarted: gameHasStarted),
+                    Score(score: score, bestScore: bestScore),
+                    Dodo(dodoX: dodoX, dodoY: dodoY - dodoHeight, dodoWidth: dodoWidth, dodoHeight: dodoHeight),
+                    Barricade(barricadeX: barricadeX, barricadeY: barricadeY - barricadeHeight, barricadeWidth: barricadeWidth, barricadeHeight: barricadeHeight),
+                    GameHasOver(gameHasOver: gameHasOver)
+                  ],
                 ),
               ),
             ),
-          ))
-        ],
+            Expanded(
+                child: Container(
+              color: Colors.grey[600],
+              child: const Center(
+                child: Text(
+                  'W E C O D E',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ))
+          ],
+        ),
       ),
     );
   }
