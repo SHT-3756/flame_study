@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:dodo_game/barricade.dart';
-import 'package:dodo_game/click_to_start.dart';
-import 'package:dodo_game/dodo.dart';
-import 'package:dodo_game/game_has_over.dart';
-import 'package:dodo_game/score.dart';
+import 'package:dodo_game/components/barricade.dart';
+import 'package:dodo_game/components/click_to_start.dart';
+import 'package:dodo_game/components/dodo.dart';
+import 'package:dodo_game/components/game_has_over.dart';
+import 'package:dodo_game/components/score.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
