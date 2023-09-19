@@ -1,3 +1,4 @@
+import 'package:dodo_game/barricade.dart';
 import 'package:dodo_game/click_to_start.dart';
 import 'package:dodo_game/dodo.dart';
 import 'package:dodo_game/score.dart';
@@ -38,6 +39,11 @@ class _HomeState extends State<Home> {
   double dodoWidth = 0.2;
   double dodoHeight = 0.4;
 
+  double barricadeX = 0.5;
+  double barricadeY = 1;
+  double barricadeWidth = 0.2;
+  double barricadeHeight = 0.4;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +57,8 @@ class _HomeState extends State<Home> {
                 children: [
                   ClickToStart(gameHasStarted: gameHasStarted),
                   Score(scroe: score, bestScore: bestScore),
-                  Dodo(dodoX: dodoX, dodoY: dodoY - dodoHeight, dodoWidth: dodoWidth, dodoHeight: dodoHeight)
+                  Dodo(dodoX: dodoX, dodoY: dodoY - dodoHeight, dodoWidth: dodoWidth, dodoHeight: dodoHeight),
+                  Barricade(barricadeX: barricadeX, barricadeY: barricadeY - barricadeHeight, barricadeWidth: barricadeWidth, barricadeHeight: barricadeHeight)
                 ],
               ),
             ),
