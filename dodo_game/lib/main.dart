@@ -1,3 +1,4 @@
+import 'package:dodo_game/click_to_start.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -26,13 +27,22 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  bool gameHasStarted = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blueGrey,
       body: Column(
         children: [
-          Expanded(child: Container()),
+          Expanded(
+            flex: 2,
+            child: Center(
+              child: Stack(
+                children: [ClickToStart(gameHasStarted: gameHasStarted)],
+              ),
+            ),
+          ),
           Expanded(
               child: Container(
             color: Colors.grey[600],

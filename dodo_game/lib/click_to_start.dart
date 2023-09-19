@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class ClickToStart extends StatelessWidget {
-  final bool gameHasStared;
+  final bool gameHasStarted;
 
-  const ClickToStart({Key? key, required this.gameHasStared}) : super(key: key);
+  const ClickToStart({Key? key, required this.gameHasStarted}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return gameHasStared
+    return gameHasStarted
         ? Container()
         : Stack(
             children: [
