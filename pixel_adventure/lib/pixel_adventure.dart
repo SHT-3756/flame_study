@@ -6,8 +6,8 @@ import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
-import 'package:pixel_adventure/actors/player.dart';
-import 'package:pixel_adventure/levels/level.dart';
+import 'package:pixel_adventure/components/player.dart';
+import 'package:pixel_adventure/components/level.dart';
 
 // 키 이벤트를 요청 및 사용 가능 하도록 호출(HasKeyboardHandlerComponents)
 // 조이스틱 드래그 사용하기 위함 (DragCallbacks)
