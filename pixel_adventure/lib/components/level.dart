@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
+import 'package:pixel_adventure/components/collision_block.dart';
 import 'package:pixel_adventure/components/player.dart';
 
 class Level extends World {
@@ -11,6 +12,7 @@ class Level extends World {
   Level({required this.levelName, required this.player});
 
   late TiledComponent level;
+  List<CollisionBlock> collisionsBlocks = [];
 
   @override
   FutureOr<void> onLoad() async {
@@ -20,16 +22,52 @@ class Level extends World {
 
     final spawnPointsLayer = level.tileMap.getLayer<ObjectGroup>('Spawnpoints');
 
-    for (final spawnPoint in spawnPointsLayer!.objects) {
-      switch (spawnPoint.class_) {
-        case 'Player':
-          player.position = Vector2(spawnPoint.x, spawnPoint.y);
-          add(player);
-          break;
-        default:
+    if (spawnPointsLayer != null) {
+      for (final spawnPoint in spawnPointsLayer.objects) {
+        switch (spawnPoint.class_) {
+          case 'Player':
+            player.position = Vector2(spawnPoint.x, spawnPoint.y);
+            add(player);
+            break;
+          default:
+        }
       }
     }
 
+    // 충동 블럭
+    final collisionsLayer = level.tileMap.getLayer<ObjectGroup>('Collisions');
+
+    if (collisionsLayer != null) {
+      for (final collision in collisionsLayer.objects) {
+        switch (collision.class_) {
+          case 'Platform':
+            final platform = CollisionBlock(
+              position: Vector2(collision.x, collision.y),
+              size: Vector2(
+                collision.width,
+                collision.height,
+              ),
+              isPlatform: true,
+            );
+            collisionsBlocks.add(platform);
+            add(platform);
+            break;
+          default:
+            final block = CollisionBlock(
+              position: Vector2(collision.x, collision.y),
+              size: Vector2(
+                collision.width,
+                collision.height,
+              )
+            );
+            collisionsBlocks.add(block);
+            add(block);
+            break;
+        }
+      }
+    }
+    // player 에게 충돌할 platform 을 저장해서 전달한다.
+    player.collisionBlocks = collisionsBlocks;
     return super.onLoad();
   }
 }
