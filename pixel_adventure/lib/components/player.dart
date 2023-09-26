@@ -6,12 +6,9 @@ import 'package:pixel_adventure/pixel_adventure.dart';
 
 enum PlayerState { idle, running }
 
-enum PlayerDirection { left, right, none }
-
 // 키보드를 사용하기 위함(KeyboardHandler)
 class Player extends SpriteAnimationGroupComponent
     with HasGameRef<PixelAdventure>, KeyboardHandler {
-
   String character;
 
   Player({position, this.character = 'Ninja Frog'}) : super(position: position);
@@ -19,9 +16,8 @@ class Player extends SpriteAnimationGroupComponent
   late final SpriteAnimation idleAnimation;
   late final SpriteAnimation runningAnimation;
   final double stepTime = 0.05;
-  bool isFacingRight = true; // 왼쪽을 바라보는지 유무
 
-  PlayerDirection playerDirection = PlayerDirection.none;
+  double horizontalMovement = 0; // 수평 이동
   double moveSpeed = 100; // default 이동 속도 100
   Vector2 velocity = Vector2.zero();
 
@@ -33,6 +29,7 @@ class Player extends SpriteAnimationGroupComponent
 
   @override
   void update(double dt) {
+    _updatePlayerState(dt);
     // 게임 개발에는 델다 시간을 많이 사용한다.
     _updatePlayerMovement(dt);
     super.update(dt); // 많은 프레임을 업데이트 가능하다. 10 프레임은 1초에 10번 업데이트 한다.
@@ -41,6 +38,7 @@ class Player extends SpriteAnimationGroupComponent
 
   @override
   bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+    horizontalMovement = 0;
     // a or 물리적으로 왼쪽 화살표
     final isLeftKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyA) ||
         keysPressed.contains(LogicalKeyboardKey.arrowLeft);
@@ -49,16 +47,9 @@ class Player extends SpriteAnimationGroupComponent
     final isRightKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyD) ||
         keysPressed.contains(LogicalKeyboardKey.arrowRight);
 
-    // 동시 키 누르면
-    if (isLeftKeyPressed && isRightKeyPressed) {
-      playerDirection = PlayerDirection.none;
-    } else if (isLeftKeyPressed) {
-      playerDirection = PlayerDirection.left;
-    } else if (isRightKeyPressed) {
-      playerDirection = PlayerDirection.right;
-    } else {
-      playerDirection = PlayerDirection.none;
-    }
+    // 삼항연산자로 왼쪽 오른쪽 이동
+    horizontalMovement += isLeftKeyPressed ? -1 : 0;
+    horizontalMovement += isRightKeyPressed ? 1 : 0;
 
     return super.onKeyEvent(event, keysPressed);
   }
@@ -92,33 +83,22 @@ class Player extends SpriteAnimationGroupComponent
 
   // 플레이어 위치 이동
   void _updatePlayerMovement(double dt) {
-    double dirX = 0.0;
-    switch (playerDirection) {
-      case PlayerDirection.left:
-        if (isFacingRight) {
-          flipHorizontallyAroundCenter(); // 캐릭터 중심으로 뒤집는다. (중앙 중심으로 수평으로 뒤집는다.)
-          isFacingRight = false;
-        }
-        current = PlayerState.running;
-        dirX -= moveSpeed;
-        break;
-      case PlayerDirection.right:
-        if (!isFacingRight) {
-          flipHorizontallyAroundCenter();
-          isFacingRight = true;
-        }
-        current = PlayerState.running;
-        dirX += moveSpeed;
-        break;
-      case PlayerDirection.none:
-        current = PlayerState.idle;
-        break;
-      default:
+    velocity.x = horizontalMovement * moveSpeed; // 수평이동이  -1 , 0 , 1  * 100
+    // 속도를 플레이어 위치로 설정하면 위치를 호출할 수 있다.
+    position.x += velocity.x * dt; // 100 의 이동속도로 움직인다.
+  }
+
+  void _updatePlayerState(double dt) {
+    PlayerState playerState = PlayerState.idle;
+
+    if (velocity.x < 0 && scale.x > 0) {
+      flipHorizontallyAroundCenter();
+    } else if (velocity.x > 0 && scale.x < 0) {
+      flipHorizontallyAroundCenter();
     }
 
-    // 플레이어 방향 기반으로 방향 x 를 설정했으니 실제 속도에 추가해야하는 코드
-    velocity = Vector2(dirX, 0.0);
-    // 속도를 플레이어 위치로 설정하면 위치를 호출할 수 있다.
-    position += velocity * dt; // 100 의 이동속도로 움직인다.
+    // 움직이는 상태면 달리는 상태로 변경
+    if(velocity.x > 0 || velocity.x < 0) playerState = PlayerState.running;
+    current = playerState;
   }
 }
