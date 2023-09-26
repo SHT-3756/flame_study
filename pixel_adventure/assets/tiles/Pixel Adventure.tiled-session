@@ -16,16 +16,19 @@
             "scale": 1.25,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 341.59999999999997,
-                "y": 175.20000000000005
+                "x": 305.6,
+                "y": 195.20000000000005
             }
         },
         "Level-02.tmx": {
-            "scale": 3.0635,
+            "expandedObjectLayers": [
+                2
+            ],
+            "scale": 0.6898,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 228.82324139056638,
-                "y": 247.42941080463527
+                "x": 330.53058857639894,
+                "y": 100.02899391127863
             }
         },
         "Pixel Adventure.tsx": {
