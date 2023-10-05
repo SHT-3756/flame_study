@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flame/components.dart';
 import 'package:flutter/services.dart';
+import 'package:pixel_adventure/components/utils.dart';
 import 'package:pixel_adventure/pixel_adventure.dart';
 
 import 'collision_block.dart';
@@ -111,7 +112,18 @@ class Player extends SpriteAnimationGroupComponent
   // 수평 충돌 확인 메소드
   void _checkHorizontalCollisions() {
     for(final block in collisionBlocks) {
-      // TODO : 충돌 핸들
+      if(!block.isPlatform) {
+        if(checkCollision(this, block)) {
+          if(velocity.x > 0) {
+            velocity.x = 0;
+            position.x = block.x -width;
+          }
+          if(velocity.x < 0) {
+            velocity.x = 0;
+            position.x = block.x + block.width + width;
+          }
+        }
+      }
     }
   }
 }
