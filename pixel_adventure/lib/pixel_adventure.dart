@@ -18,7 +18,7 @@ class PixelAdventure extends FlameGame
   late final CameraComponent cam;
   Player player = Player();
   late JoystickComponent joystick;
-  bool showJoystick = true; // desktop 인 경우 false 로 설정 플랫폼 설정
+  bool showJoystick = false; // desktop 인 경우 false 로 설정 플랫폼 설정
 
   @override
   FutureOr<void> onLoad() async {

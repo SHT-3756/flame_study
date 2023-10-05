@@ -20,9 +20,13 @@ class Player extends SpriteAnimationGroupComponent
   late final SpriteAnimation runningAnimation;
   final double stepTime = 0.05;
 
+  final double _gravity = 9.8; // 중력
+  final double _jumpForce = 460; // 더플점프를 할 것임
+  final double _terminalVelocity = 300; // 종단 속도
   double horizontalMovement = 0; // 수평 이동
   double moveSpeed = 100; // default 이동 속도 100
   Vector2 velocity = Vector2.zero();
+  bool isOnGround = false; // 플레이어의 위치가 땅에 위치해있는지 여부
   List<CollisionBlock> collisionBlocks = []; // 충돌 블록
 
   @override
@@ -39,6 +43,8 @@ class Player extends SpriteAnimationGroupComponent
     // 게임 개발에는 델다 시간을 많이 사용한다.
     _updatePlayerMovement(dt);
     _checkHorizontalCollisions();
+    _applyGravity(dt);
+    _checkVerticalCollisions();
     super.update(dt); // 많은 프레임을 업데이트 가능하다. 10 프레임은 1초에 10번 업데이트 한다.
     // 정확한 업데이트 량을 정해서 1초마다 일정하게 프레임 업데이트를 시켜준다.
   }
@@ -112,15 +118,51 @@ class Player extends SpriteAnimationGroupComponent
   // 수평 충돌 확인 메소드
   void _checkHorizontalCollisions() {
     for (final block in collisionBlocks) {
-      if (!block.isPlatform) { //  블록 도트가 플랫폼이 아닌 경우(충돌하는 플랫폼인지 확인)
-        if (checkCollision(this, block)) { // 충돌을 확인하면 true
-          if (velocity.x > 0) { // 오른쪽으로 간다면
+      if (block.isPlatform) {
+        //  블록 도트가 플랫폼이 아닌 경우(충돌하는 플랫폼인지 확인)
+        if (checkCollision(this, block)) {
+          // 충돌을 확인하면 true
+          if (velocity.x > 0) {
+            // 오른쪽으로 간다면
             velocity.x = 0; // 속도를 0 으로 초기화
             position.x = block.x - width; // 위치 x = 블록 x - 플레이어 넓이에 멈춘다.
+            break;
           }
-          if (velocity.x < 0) { // 왼쪽으로 간다면
+          if (velocity.x < 0) {
+            print('왼쪽!');
             velocity.x = 0; // 속도 0 으로 초기화
-            position.x = block.x + block.width + width; // 위치 x = 블록 x + 플레이어 넓이에 멈춘다.
+            position.x =
+                block.x + block.width + width; // 위치 x = 블록 x + 플레이어 넓이에 멈춘다.
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  // 중력 적용 메소드
+  void _applyGravity(double dt) {
+    velocity.y += _gravity; // 중력 더하기
+    velocity.y = velocity.y.clamp(-_jumpForce, _terminalVelocity); // 종단 속도보다 더 빨리 안 떨어지게 고정
+    position.y += velocity.y * dt;
+  }
+
+  // 수직 충돌 확인 메소드
+  void _checkVerticalCollisions() {
+    for (final block in collisionBlocks) {
+      if (block.isPlatform) {  // 블록 플랫폼이라면 실행
+      // handle platforms.
+      } else { // 블록
+        if (checkCollision(this, block)) {
+          if (velocity.y > 0) { // 떨어지고 있음
+            velocity.y = 0; // 0 으로 초기화
+            position.y = block.y - width; // 위치 = 블록 y 에서 높이를 뺀다.
+            isOnGround = true;
+            break;
+          }
+          if(velocity.y < 0) {
+            velocity.y = 0;
+            position.y  = block.y + block.height;
           }
         }
       }
