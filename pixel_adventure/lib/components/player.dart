@@ -27,6 +27,7 @@ class Player extends SpriteAnimationGroupComponent
   double moveSpeed = 100; // default 이동 속도 100
   Vector2 velocity = Vector2.zero();
   bool isOnGround = false; // 플레이어의 위치가 땅에 위치해있는지 여부
+  bool hasJumped = false;
   List<CollisionBlock> collisionBlocks = []; // 충돌 블록
 
   @override
@@ -64,6 +65,8 @@ class Player extends SpriteAnimationGroupComponent
     horizontalMovement += isLeftKeyPressed ? -1 : 0;
     horizontalMovement += isRightKeyPressed ? 1 : 0;
 
+    // 점프
+    hasJumped = keysPressed.contains(LogicalKeyboardKey.space);
     return super.onKeyEvent(event, keysPressed);
   }
 
@@ -96,9 +99,19 @@ class Player extends SpriteAnimationGroupComponent
 
   // 플레이어 위치 이동
   void _updatePlayerMovement(double dt) {
+    if(hasJumped && isOnGround) _playerJump(dt);
+
     velocity.x = horizontalMovement * moveSpeed; // 수평이동이  -1 , 0 , 1  * 100
     // 속도를 플레이어 위치로 설정하면 위치를 호출할 수 있다.
     position.x += velocity.x * dt; // 100 의 이동속도로 움직인다.
+  }
+
+  // 점프
+  void _playerJump(double dt) {
+    velocity.y = -_jumpForce;
+    position.y += velocity.y * dt;
+    isOnGround = false;
+    hasJumped = false;
   }
 
   void _updatePlayerState() {
