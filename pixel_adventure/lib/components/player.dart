@@ -105,22 +105,22 @@ class Player extends SpriteAnimationGroupComponent
     }
 
     // 움직이는 상태면 달리는 상태로 변경
-    if(velocity.x > 0 || velocity.x < 0) playerState = PlayerState.running;
+    if (velocity.x > 0 || velocity.x < 0) playerState = PlayerState.running;
     current = playerState;
   }
 
   // 수평 충돌 확인 메소드
   void _checkHorizontalCollisions() {
-    for(final block in collisionBlocks) {
-      if(!block.isPlatform) {
-        if(checkCollision(this, block)) {
-          if(velocity.x > 0) {
-            velocity.x = 0;
-            position.x = block.x -width;
+    for (final block in collisionBlocks) {
+      if (!block.isPlatform) { //  블록 도트가 플랫폼이 아닌 경우(충돌하는 플랫폼인지 확인)
+        if (checkCollision(this, block)) { // 충돌을 확인하면 true
+          if (velocity.x > 0) { // 오른쪽으로 간다면
+            velocity.x = 0; // 속도를 0 으로 초기화
+            position.x = block.x - width; // 위치 x = 블록 x - 플레이어 넓이에 멈춘다.
           }
-          if(velocity.x < 0) {
-            velocity.x = 0;
-            position.x = block.x + block.width + width;
+          if (velocity.x < 0) { // 왼쪽으로 간다면
+            velocity.x = 0; // 속도 0 으로 초기화
+            position.x = block.x + block.width + width; // 위치 x = 블록 x + 플레이어 넓이에 멈춘다.
           }
         }
       }
