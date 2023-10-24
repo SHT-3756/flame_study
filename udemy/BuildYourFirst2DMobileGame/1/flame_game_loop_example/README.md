@@ -3,3 +3,4 @@
 처음 만든 플레임 게임 루프 프로젝트 예시
 
 ## 결과
+![result_image](/assets/images/screenshot-1.png)
