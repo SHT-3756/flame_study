@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jump_game/game/doodle_dash.dart';
 
-import 'scroe_display.dart';
+import 'score_display.dart';
 
 class GameOverlay extends StatefulWidget {
   final DoodleDash game;

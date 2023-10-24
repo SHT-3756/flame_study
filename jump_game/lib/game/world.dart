@@ -6,12 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:jump_game/game/doodle_dash.dart';
 
 class World extends ParallaxComponent<DoodleDash>{
-  get gameRef => null;
-
-
   @override
   FutureOr<void> onLoad() async {
-    parallax = await gameRef.loadParallax(
+    parallax = await game.loadParallax(
       [
         ParallaxImageData('game/background/06_Background_Solid.png'),
         ParallaxImageData('game/background/05_Background_Small_Stars.png'),
