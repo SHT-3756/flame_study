@@ -32,5 +32,6 @@ class MyFirstGame extends FlameGame with TapDetector {
 }
 ```
 
+
 ## 결과
-<center><img src="https://github.com/SHT-3756/flame_study/blob/main/udemy/BuildYourFirst2DMobileGame/1/flame_game_loop_example/assets/images/screenshot-1.png" width="400px" height="800px"></center>
+<center><img src"https://github.com/SHT-3756/flame_study/blob/main/udemy/BuildYourFirst2DMobileGame/flame_game_loop_example/assets/images/screenshot-1.png" width="400px" height="800px"></center>
