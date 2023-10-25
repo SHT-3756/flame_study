@@ -127,14 +127,14 @@ class Square extends PositionComponent {
   void update(double dt) {
     super.update(dt);
     position += velocity * dt;
-    // 위치는 속도 * 위치;
-    // 속도는 새로고침 빈도에 의존되지 않음
+    // 위치 = 속도 * 델타 시간;
+    // 프레임 속도와 무관한 새로고침이다. 즉, 프레임 속도에 의존하지 않는다.
   }
 
   @override
   void render(Canvas canvas) {
     super.render(canvas);
-    // 모양 그리기
+    // 직사각형 모양 그리기(직사각형 크기, 색상) size 는 onLoad() 에서 size 초기화한 값으로 설정!
     canvas.drawRect(size.toRect(), color);
   }
 }
@@ -148,7 +148,8 @@ class ComponentExample001 extends FlameGame with DoubleTapDetector, TapDetector 
     // 사용자의 탭 위치;
     final touchPoint = info.eventPosition.game;
 
-    //
+    // children = flame 엔진에서 모든 컴포넌트를 추적할 수 있다.
+    // 하위 컴포넌트에서 우리가 만들어놓은 Square 클래스 이면서 touchPoint 가 포함되어있는 경우!
     // 탭 액션 처리
     // 탭한 위치에 스크린에 도형이 있는 지 여부 체크
     final handled = children.any((component) {
@@ -163,17 +164,24 @@ class ComponentExample001 extends FlameGame with DoubleTapDetector, TapDetector 
       return false;
     });
 
-    //
-    // 만약에 도형이 없다면
     // 새로 도형을 추가해라!
     if (!handled) {
       add(Square()
-        ..position = touchPoint
-        ..squareSize = 45.0
-        ..velocity = Vector2(0, 1).normalized() * 50
-        ..color = (BasicPalette.blue.paint()
+        ..position = touchPoint // 위치는 터치한 곳으로
+        ..squareSize = 45.0 // 크기는 45
+        ..velocity = Vector2(-1, -1).normalized() * 25 // 하향 백터를 그리고 25 를 곱하면 속도는 25 가 된다.
+        ..color = (BasicPalette.blue.paint() // 색상은 블로, 선, 두께 2
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2));
+
+      // (0, 1) 아래로
+      // (0, -1) 위로
+      // (1, 1) 오른쪽 아래로 대각선
+      // (1, -1) 오른쪽 위로 대각선
+      // (1, 0) 오른쪽
+      // (-1, 0) 왼쪽
+      // (-1, 1) 왼쪽 아래 대각선
+      // (-1, -1) 오른쪽 위로 대각선
     }
   }
 
