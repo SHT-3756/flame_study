@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
@@ -6,11 +7,7 @@ import 'package:flame/input.dart';
 import 'package:flame/palette.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'bullet.dart';
-import 'joystick_player.dart';
-
 main() {
-  // final example = CaseStudy002Slide002();
   final example = ComponentExample001();
   runApp(
     GameWidget(game: example),
@@ -18,25 +15,22 @@ main() {
 }
 
 class Square extends PositionComponent {
-  // 속도 0;
-  var velocity = Vector2(0, 0).normalized() * 25;
+  // var velocity = Vector2(0, 25);
+  var velocity = Vector2(0, 0).normalized() * 25; // 속도 0;
+  var rotationSpeed = 0.3; // 회전 속도
+  var squareSize = 128.0; // 큰 사각형 사이즈
 
-  // 큰 사각형 사이즈
-  var squareSize = 128.0;
-
-  // 흰색, 두꺼움 2 의 선
   var color = BasicPalette.white.paint()
     ..style = PaintingStyle.stroke
-    ..strokeWidth = 2;
+    ..strokeWidth = 2; // 흰색, 두꺼움 2 의 선
 
   @override
   Future<void> onLoad() async {
-    super.onLoad();
     // 초기화
-    // 사이즈 가로 128, 세로 128 로 선언
-    size.setValues(squareSize, squareSize);
-    // 중심 = 오른쪽 위
-    anchor = Anchor.topCenter;
+    super.onLoad();
+    size.setValues(squareSize, squareSize); // 사이즈 가로 128, 세로 128 로 선언
+
+    anchor = Anchor.center; // 중심 = 오른쪽 위
   }
 
   @override
@@ -46,6 +40,8 @@ class Square extends PositionComponent {
     position += velocity * dt;
     // 위치 = 속도 * 델타 시간;
     // 프레임 속도와 무관한 새로고침이다. 즉, 프레임 속도에 의존하지 않는다.
+    var angleDelta = dt * rotationSpeed; // 회전 속도에 맞게 위치 이동
+    angle = (angle + angleDelta) % (2 * pi); // 각도 선언
   }
 
   @override
@@ -58,6 +54,17 @@ class Square extends PositionComponent {
 
 class ComponentExample001 extends FlameGame with DoubleTapDetector, TapDetector {
   bool running = true;
+
+  @override
+  bool debugMode = true;
+
+//  텍스트 그리기 위함
+  final TextPaint textPaint = TextPaint(
+    style: const TextStyle(
+      fontSize: 14.0,
+      fontFamily: 'Awesome Font',
+    ),
+  );
 
   @override
   // 한번 탭
@@ -73,9 +80,9 @@ class ComponentExample001 extends FlameGame with DoubleTapDetector, TapDetector 
       // 컴포넌트가 사각형이고, 컴포넌트에 내가 클릭한곳이 맞다면
       if (component is Square && component.containsPoint(touchPoint)) {
         // 컴포넌트 삭제
-        // remove(component);
+        remove(component);
         // 컴포넌트, 이동 속도 역전 => position += -velocity * dt  = 위로 올라간다.
-        component.velocity.negate();
+        // component.velocity.negate();
         return true;
       }
       return false;
@@ -86,7 +93,7 @@ class ComponentExample001 extends FlameGame with DoubleTapDetector, TapDetector 
       add(Square()
         ..position = touchPoint // 위치는 터치한 곳으로
         ..squareSize = 45.0 // 크기는 45
-        ..velocity = Vector2(-1, -1).normalized() * 25 // 하향 백터를 그리고 25 를 곱하면 속도는 25 가 된다.
+        ..velocity = Vector2(0, 1).normalized() * 25 // 하향 백터를 그리고 25 를 곱하면 속도는 25 가 된다.
         ..color = (BasicPalette.blue.paint() // 색상은 블로, 선, 두께 2
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2));
@@ -112,5 +119,16 @@ class ComponentExample001 extends FlameGame with DoubleTapDetector, TapDetector 
     }
     // 상태 변경
     running = !running;
+  }
+
+  @override
+  void render(Canvas canvas) {
+    textPaint.render(
+      canvas,
+      "objects active: ${children.length}",
+      Vector2(10, 20),
+    );
+
+    super.render(canvas);
   }
 }
