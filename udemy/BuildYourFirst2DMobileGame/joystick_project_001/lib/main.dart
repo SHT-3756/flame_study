@@ -1,125 +1,191 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-void main() {
-  runApp(const MyApp());
+import 'package:flame/components.dart';
+import 'package:flame/game.dart';
+import 'package:flame/input.dart';
+import 'package:flame/palette.dart';
+import 'package:flutter/cupertino.dart';
+
+import 'bullet.dart';
+import 'joystick_player.dart';
+
+main() {
+  // final example = CaseStudy002Slide002();
+  final example = ComponentExample001();
+  runApp(
+    GameWidget(game: example),
+  );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class CaseStudy002Slide002 extends FlameGame with HasDraggables, HasTappables {
+  static const String description = '''
+    In this example we showcase how to use the joystick by creating simple
+    `CircleComponent`s that serve as the joystick's knob and background.
+    Steer the player by using the joystick. We also show how to shoot bullets
+    and how to find the angle of the bullet path relative to the ship's angle
+  ''';
 
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
+  //
+  // The player being controlled by Joystick
+  late final JoystickPlayer player;
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  //
+  // The actual Joystick component
+  late final JoystickComponent joystick;
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  //
+  // angle of the ship being displayed on canvas
+  final TextPaint shipAngleTextPaint = TextPaint();
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
+  Future<void> onLoad() async {
+    await super.onLoad();
     //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    // joystick knob and background skin styles
+    final knobPaint = BasicPalette.green.withAlpha(200).paint();
+    final backgroundPaint = BasicPalette.green.withAlpha(100).paint();
+    //
+    // Actual Joystick component creation
+    joystick = JoystickComponent(
+      knob: CircleComponent(radius: 15, paint: knobPaint),
+      background: CircleComponent(radius: 50, paint: backgroundPaint),
+      margin: const EdgeInsets.only(left: 20, bottom: 20),
     );
+
+    //
+    // adding the player that will be controlled by our joystick
+    player = JoystickPlayer(joystick);
+
+    //
+    // add both joystick and the controlled player to the game instance
+    add(player);
+    add(joystick);
+  }
+
+  @override
+  void update(double dt) {
+    //
+    //  show the angle of the player
+    print("current player angle: ${player.angle}");
+    super.update(dt);
+  }
+
+  @override
+  //
+  //
+  // We will handle the tap action by the user to shoot a bullet
+  // each time the user taps and lifts their finger
+  void onTapUp(int pointerId, TapUpInfo info) {
+    //
+    // velocity vector pointing straight up.
+    // Represents 0 radians which is 0 desgrees
+    var velocity = Vector2(0, -1);
+    // rotate this vector to the same ange as the player
+    velocity.rotate(player.angle);
+    // create a bullet with the specific angle and add it to the game
+    add(Bullet(player.position, velocity));
+    super.onTapUp(pointerId, info);
+  }
+
+  @override
+  void render(Canvas canvas) {
+    super.render(canvas);
+    //
+    // render the angle in radians for reference
+    shipAngleTextPaint.render(
+      canvas,
+      '${player.angle.toStringAsFixed(5)} radians',
+      Vector2(20, size.y - 24),
+    );
+  }
+}
+
+class Square extends PositionComponent {
+  // 속도 0;
+  var velocity = Vector2(0, 0).normalized() * 25;
+
+  // 큰 사각형 사이즈
+  var squareSize = 128.0;
+
+  // 흰색, 두꺼움 2 의 선
+  var color = BasicPalette.white.paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 2;
+
+  @override
+  Future<void> onLoad() async {
+    super.onLoad();
+    // 초기화
+    // 사이즈 가로 128, 세로 128 로 선언
+    size.setValues(squareSize, squareSize);
+    // 중심 = 오른쪽 위
+    anchor = Anchor.topCenter;
+  }
+
+  @override
+  // 속도에 기반하여 도형의 내부 상태 업데이트
+  void update(double dt) {
+    super.update(dt);
+    position += velocity * dt;
+    // 위치는 속도 * 위치;
+    // 속도는 새로고침 빈도에 의존되지 않음
+  }
+
+  @override
+  void render(Canvas canvas) {
+    super.render(canvas);
+    // 모양 그리기
+    canvas.drawRect(size.toRect(), color);
+  }
+}
+
+class ComponentExample001 extends FlameGame with DoubleTapDetector, TapDetector {
+  bool running = true;
+
+  @override
+  // 한번 탭
+  void onTapUp(TapUpInfo info) {
+    // 사용자의 탭 위치;
+    final touchPoint = info.eventPosition.game;
+
+    //
+    // 탭 액션 처리
+    // 탭한 위치에 스크린에 도형이 있는 지 여부 체크
+    final handled = children.any((component) {
+      // 컴포넌트가 사각형이고, 컴포넌트에 내가 클릭한곳이 맞다면
+      if (component is Square && component.containsPoint(touchPoint)) {
+        // 컴포넌트 삭제
+        // remove(component);
+        // 컴포넌트, 이동 속도 역전 => position += -velocity * dt  = 위로 올라간다.
+        component.velocity.negate();
+        return true;
+      }
+      return false;
+    });
+
+    //
+    // 만약에 도형이 없다면
+    // 새로 도형을 추가해라!
+    if (!handled) {
+      add(Square()
+        ..position = touchPoint
+        ..squareSize = 45.0
+        ..velocity = Vector2(0, 1).normalized() * 50
+        ..color = (BasicPalette.blue.paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2));
+    }
+  }
+
+  @override
+  // 더블 탭시
+  void onDoubleTap() {
+    if (running) {
+      pauseEngine(); // 엔진 일시정지
+    } else {
+      resumeEngine(); // 엔진 일시정지 해제
+    }
+    // 상태 변경
+    running = !running;
   }
 }
