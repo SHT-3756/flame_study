@@ -2,8 +2,7 @@ import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame/palette.dart';
 import 'package:flutter/material.dart';
-
-import 'platforms/asteroid.dart';
+import 'package:joystick_project_001/platforms/square.dart';
 
 main() {
   final example = ComponentExample001();
@@ -18,7 +17,7 @@ class ComponentExample001 extends FlameGame with DoubleTapDetector, TapDetector 
   bool running = true;
 
   @override
-  bool debugMode = true;
+  bool debugMode = false;
 
 //  텍스트 그리기 위함
   final TextPaint textPaint = TextPaint(
@@ -40,10 +39,11 @@ class ComponentExample001 extends FlameGame with DoubleTapDetector, TapDetector 
     // 탭한 위치에 스크린에 도형이 있는 지 여부 체크
     final handled = children.any((component) {
       // 컴포넌트가 사각형이고, 컴포넌트에 내가 클릭한곳이 맞다면
-      if (component is Asteroid && component.containsPoint(touchPoint)) {
-        // 컴포넌트 삭제
-        // remove(component);
+      if (component is Square && component.containsPoint(touchPoint)) {
+
+        // remove(component); // 컴포넌트 삭제
         // 컴포넌트, 이동 속도 역전 => position += -velocity * dt  = 위로 올라간다.
+        component.processHit();
         component.velocity.negate();
         return true;
       }
@@ -52,22 +52,24 @@ class ComponentExample001 extends FlameGame with DoubleTapDetector, TapDetector 
 
     // 새로 도형을 추가해라!
     if (!handled) {
-      // add(Square()
-      //   ..position = touchPoint // 위치는 터치한 곳으로
-      //   ..squareSize = 45.0 // 크기는 45
-      //   ..velocity = Vector2(0, 1).normalized() * 25 // 하향 백터를 그리고 25 를 곱하면 속도는 25 가 된다.
-      //   ..color = (BasicPalette.blue.paint() // 색상은 블로, 선, 두께 2
-      //     ..style = PaintingStyle.stroke
-      //     ..strokeWidth = 2)
-      // );
-      // 운선 소행성 클릭한 곳에 출력
-      add(Asteroid()
-        ..position = touchPoint
-        ..size = Vector2(100, 100)
-        ..velocity = Vector2(0, 1).normalized() * 25
-        ..paint = (BasicPalette.red.paint()
+      add(Square()
+        ..position = touchPoint // 위치는 터치한 곳으로
+        ..squareSize = 45.0 // 크기는 45
+        ..velocity = Vector2(0, 1).normalized() * 25 // 하향 백터를 그리고 25 를 곱하면 속도는 25 가 된다.
+        ..color = (BasicPalette.red.paint() // 색상은 블로, 선, 두께 2
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 1));
+          ..strokeWidth = 2)
+      );
+
+      // 운선 소행성 클릭한 곳에 출력
+      // add(Asteroid()
+      //   ..position = touchPoint
+      //   ..size = Vector2(100, 100)
+      //   ..velocity = Vector2(0, 1).normalized() * 25
+      //   ..paint = (BasicPalette.red.paint()
+      //     ..style = PaintingStyle.stroke
+      //     ..strokeWidth = 1));
+
       // (0, 1) 아래로
       // (0, -1) 위로
       // (1, 1) 오른쪽 아래로 대각선
