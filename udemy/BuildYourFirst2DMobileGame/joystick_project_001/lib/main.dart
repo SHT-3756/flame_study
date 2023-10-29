@@ -1,17 +1,61 @@
+import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame/palette.dart';
 import 'package:flutter/material.dart';
+import 'package:joystick_project_001/joystick_player.dart';
 import 'package:joystick_project_001/platforms/square.dart';
 
 main() {
-  final example = ComponentExample001();
+  // final example = ComponentExample001();
+  final example = JoyStickExample();
   runApp(
     GameWidget(game: example),
   );
 }
 
+class JoyStickExample extends FlameGame with DragCallbacks {
 
+  late final JoystickPlayer player;
+  late final JoystickComponent joystick;
+
+
+  @override
+  Future<void> onLoad() async {
+    await super.onLoad();
+
+    // 조이스틱 노브와 배경화면 스타일
+    final knobPaint = BasicPalette.green.withAlpha(200).paint();
+    final backgroundPaint = BasicPalette.green.withAlpha(100).paint();
+
+    //실제  조이스틱 컴포넌트 만들기
+    joystick = JoystickComponent(
+      knob: CircleComponent(radius: 15, paint: knobPaint),
+      background: CircleComponent(radius: 50, paint: backgroundPaint),
+      margin: const EdgeInsets.only(left: 20, bottom: 20),
+    );
+
+    // 만든 조이스틱 컴포넌트 넣어줘서 조이스틱으로 컨틀롤하기
+    player = JoystickPlayer(joystick);
+
+    add(player);
+    add(joystick);
+  }
+
+  @override
+  void update(double dt) {
+    print('player.Angle,${player.angle}');
+    super.update(dt);
+  }
+
+  @override
+  void render(Canvas canvas) {
+    super.render(canvas);
+  }
+
+
+}
 
 class ComponentExample001 extends FlameGame with DoubleTapDetector, TapDetector {
   bool running = true;
